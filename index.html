@@ -39,7 +39,7 @@ body{background:black;}
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+
   background-color: #102773fc; /* Color of the background circle */
     transform-origin: center bottom;
     transform: scaleY(0); /* Initially set to zero height */
@@ -86,7 +86,7 @@ button.addEventListener('mousedown', function(event) {
             volume = Math.max(0, volume - 1); // Decrease volume by 1, clamp at 0
         }
         updateVolumeDisplay();
-    }, 50); // Interval in milliseconds
+    }, 75); // Interval in milliseconds
 });
 
 document.addEventListener('mouseup', function() {

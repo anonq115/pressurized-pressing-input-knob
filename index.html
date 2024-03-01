@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volume Control Button</title>
+<style>
+/* Add your button styling here */
+.button {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #ccc;
+    border: none;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    overflow: hidden; /* Ensure the background circle stays within the button */
+    margin:0 auto;
+}
+
+/* Add styling for the volume indicator */
+.volume-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 19px;font-family: 'Courier New', monospace;z-index:2;
+    color:white;
+}
+
+/* Add styling for the background circle */
+.background-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  background-color: #102773fc; /* Color of the background circle */
+    transform-origin: center bottom;
+    transform: scaleY(0); /* Initially set to zero height */
+    transition: transform 0.1s linear; /* Smooth transition when volume changes */
+}
+
+.wrapper{margin:0 auto;display:flex;align-items:center;}
+
+</style>
+</head>
+<body>
+<div class ="wrapper">
+
+<button class="button" id="volumeButton">
+    <div class="volume-indicator"></div>
+    <div class="background-circle"></div>
+</button>
+</div>
+
+
+<script>
+const button = document.getElementById('volumeButton');
+const volumeIndicator = button.querySelector('.volume-indicator');
+const backgroundCircle = button.querySelector('.background-circle');
+
+let volume = 50; // Initial volume level
+let intervalId = null; // Interval id for smooth volume change
+let isIncreasing = false; // Flag to track if volume should increase or decrease
+
+button.addEventListener('mousedown', function(event) {
+    // Check if the click is above or below the center of the button
+    const rect = event.target.getBoundingClientRect();
+    const offsetY = event.clientY - rect.top;
+    const isAboveCenter = offsetY < rect.height / 2;
+
+    // Set the flag based on the initial click position
+    isIncreasing = isAboveCenter;
+
+    // Start increasing or decreasing volume smoothly based on click position
+    intervalId = setInterval(function() {
+        if (isIncreasing) {
+            volume = Math.min(100, volume + 1); // Increase volume by 1, clamp at 100
+        } else {
+            volume = Math.max(0, volume - 1); // Decrease volume by 1, clamp at 0
+        }
+        updateVolumeDisplay();
+    }, 50); // Interval in milliseconds
+});
+
+document.addEventListener('mouseup', function() {
+    // Stop increasing or decreasing volume smoothly
+    clearInterval(intervalId);
+});
+
+button.addEventListener('mousemove', function(event) {
+    // Check if the left mouse button is pressed
+    if (event.buttons === 1) {
+        // Check if the mouse is on the increasing or decreasing side of the button
+        const rect = event.target.getBoundingClientRect();
+        const offsetY = event.clientY - rect.top;
+        const isAboveCenter = offsetY < rect.height / 2;
+
+        // Update the flag if the mouse moves to the other side
+        if (isAboveCenter !== isIncreasing) {
+            isIncreasing = isAboveCenter;
+            // Update volume immediately when changing sides
+            if (isIncreasing) {
+                volume = Math.min(100, volume + 1); // Increase volume by 1, clamp at 100
+            } else {
+                volume = Math.max(0, volume - 1); // Decrease volume by 1, clamp at 0
+            }
+            updateVolumeDisplay();
+        }
+    }
+});
+
+function updateVolumeDisplay() {
+    // Update the volume indicator text
+    volumeIndicator.textContent = volume;
+    // Update the background circle size based on the volume
+    const scale = volume / 100; // Scale factor based on volume (0 to 1)
+    backgroundCircle.style.transform = `scaleY(${scale})`;
+}
+
+updateVolumeDisplay(); // Initial update of volume display
+</script>
+
+</body>
+</html>
